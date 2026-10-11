@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <title>SCK — Проверенные VLESS-ключи</title>
+
+  <!-- iOS / Apple Web App Settings -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SCK VLESS" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="theme-color" content="#09090b" />
+
+  <!-- SEO -->
+  <meta name="description"
+    content="SCK — сервис проверенных рабочих VLESS-ключей с замером задержки. Разделение по 60 ключей для удобного импорта в Karing, Hiddify, v2rayTUN, v2rayN, Streisand." />
+  <meta name="keywords"
+    content="SCK, Karing, VLESS ключи, VLESS checker, обход блокировок, бесплатный VPN, Hiddify, v2rayTUN, v2rayN" />
+  <meta name="author" content="SCK" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="SCK — Проверенные VLESS-ключи" />
+  <meta property="og:description"
+    content="Сервис рабочих VLESS-ключей с низким пингом и разделением на пакеты по 60 штук для Karing и Hiddify." />
+  <meta property="og:type" content="website" />
+
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2309090b'/><path d='M30 48a20 20 0 1 1 34 14l-4 4h-8v8h-8v8h-14v-14l16-16a20 20 0 0 1-16-4z' fill='%23ffffff'/><circle cx='62' cy='38' r='5' fill='%2309090b'/></svg>" />
+  <link rel="stylesheet" href="styles.css?v=6" />
+</head>
+
+<body>
+  <div class="app-container">
+
+    <!-- iOS Frosted Glass Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+          </svg>
+          <span>SCK</span>
+        </div>
+        <div class="brand-text">
+          <div class="title-row">
+            <h1>SCK VLESS</h1>
+            <span class="live-dot" title="Сервис активен"></span>
+            <span class="badge-online">ONLINE</span>
+          </div>
+          <p class="subtitle" id="updated">Загрузка данных...</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-ghost" id="refresh-btn" onclick="loadData()" title="Обновить статус">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+          </svg>
+          <span>Обновить</span>
+        </button>
+        <a href="working_keys.txt" download="sck_working_keys.txt" class="btn-ghost" title="Скачать файл со всеми ключами, разделенными по 60 шт">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+          <span>Файл (по 60 шт)</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- iOS Style 4-Metric Grid -->
+    <div class="metrics-strip" id="metrics-strip">
+      <div class="metric-item">
+        <div class="metric-header">
+          <span class="metric-label">Рабочих серверов</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="metric-icon">
+            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+          </svg>
+        </div>
+        <span class="metric-value" id="metric-total">—</span>
+      </div>
+
+      <div class="metric-item">
+        <div class="metric-header">
+          <span class="metric-label">Минимальный пинг</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="metric-icon text-green">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <span class="metric-value text-green" id="metric-best-ping">—</span>
+      </div>
+
+      <div class="metric-item">
+        <div class="metric-header">
+          <span class="metric-label">Пакетов по 60</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="metric-icon text-purple">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </div>
+        <span class="metric-value text-purple" id="metric-chunks">—</span>
+      </div>
+
+      <div class="metric-item">
+        <div class="metric-header">
+          <span class="metric-label">Протокол</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="metric-icon text-blue">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <span class="metric-value text-blue" style="font-size: 0.95rem; font-weight: 700;">VLESS + Reality</span>
+      </div>
+    </div>
+
+    <!-- Supported Clients Strip with SVG Icons -->
+    <div class="clients-strip">
+      <span class="clients-label">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+          <line x1="12" y1="18" x2="12.01" y2="18"></line>
+        </svg>
+        Клиенты:
+      </span>
+
+      <span class="client-pill highlight" title="Рекомендуется для iOS / Android / Windows">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        Karing
+      </span>
+
+      <span class="client-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        Hiddify
+      </span>
+
+      <span class="client-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+        v2rayTUN
+      </span>
+
+      <span class="client-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        v2rayN
+      </span>
+
+      <span class="client-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        Streisand
+      </span>
+
+      <span class="client-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+        sing-box
+      </span>
+
+      <span class="client-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><path d="m10 15 5-3-5-3v6z"></path></svg>
+        NekoBox
+      </span>
+    </div>
+
+    <!-- iOS Segmented Control Navigation: Modes with SVG Icons -->
+    <nav class="nav-modes">
+      <button class="mode-btn active" data-section="vpn" onclick="switchSection('vpn')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+        <span>Обычный VPN</span>
+      </button>
+
+      <button class="mode-btn" data-section="white" onclick="switchSection('white')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        <span>Белые списки</span>
+      </button>
+
+      <button class="mode-btn" data-section="chunks" onclick="switchSection('chunks')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16.5 9.4 7.55 4.24a1.8 1.8 0 0 0-1.8 0L2.1 6.35A1.8 1.8 0 0 0 1.2 7.9v8.2a1.8 1.8 0 0 0 .9 1.55l3.65 2.11a1.8 1.8 0 0 0 1.8 0l8.95-5.16a1.8 1.8 0 0 0 .9-1.55V10.95a1.8 1.8 0 0 0-.9-1.55z"></path>
+          <polyline points="2.1 6.35 11.05 11.51 20 6.35"></polyline>
+          <line x1="11.05" y1="21.5" x2="11.05" y2="11.51"></line>
+        </svg>
+        <span>Пакеты по 60 ключей</span>
+        <span class="badge" id="chunks-count-badge">3</span>
+      </button>
+    </nav>
+
+    <!-- Search / Filter Bar -->
+    <div class="search-bar" id="search-container">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="search-input" placeholder="Поиск по стране, протоколу (reality, grpc), порту или хосту..." oninput="handleSearch(this.value)" autocomplete="off" />
+      <button class="clear-search-btn" id="clear-search" onclick="clearSearch()" style="display:none">✕</button>
+    </div>
+
+    <!-- Quick Filter Chips with SVG Icons -->
+    <div class="filter-chips" id="filter-chips">
+      <button class="filter-chip active" data-filter="all" onclick="setQuickFilter('all')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+        <span>Все серверы</span>
+      </button>
+      <button class="filter-chip" data-filter="fast" onclick="setQuickFilter('fast')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <span>Быстрые (< 25 мс)</span>
+      </button>
+      <button class="filter-chip" data-filter="reality" onclick="setQuickFilter('reality')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <span>Reality</span>
+      </button>
+      <button class="filter-chip" data-filter="grpc" onclick="setQuickFilter('grpc')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+        <span>gRPC</span>
+      </button>
+    </div>
+
+    <!-- VPN Section Tabs (Filled by JS with Vector SVG Flags) -->
+    <div class="tab-section" id="section-vpn">
+      <div class="tabs" id="tabs-countries"></div>
+      <div class="collapsed-wrapper">
+        <button class="collapsed-toggle" id="collapsed-toggle" onclick="toggleCollapsed('vpn')">
+          <span id="collapsed-label">Другие страны: ...</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="tabs-collapsed" id="tabs-collapsed"></div>
+      </div>
+    </div>
+
+    <!-- White Section Tabs (Filled by JS with Vector SVG Flags) -->
+    <div class="tab-section" id="section-white" style="display: none;">
+      <div class="tabs" id="tabs-white"></div>
+      <div class="collapsed-wrapper">
+        <button class="collapsed-toggle" id="collapsed-toggle-white" onclick="toggleCollapsed('white')">
+          <span id="collapsed-label-white">Другие страны: ...</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="tabs-collapsed" id="tabs-collapsed-white"></div>
+      </div>
+    </div>
+
+    <!-- Active Country / Mode Content -->
+    <main id="cards-container"></main>
+
+    <!-- 60-Key Chunks Section -->
+    <section class="chunks-section" id="section-chunks" style="display: none;">
+      <div class="chunks-hero">
+        <div class="chunks-hero-text">
+          <div class="chunks-badge-pill">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            </svg>
+            <span>Массовый импорт для Karing</span>
+          </div>
+          <h2>Списки с разделением по 60 ключей</h2>
+          <p>Каждый пакет содержит ровно до 60 протестированных серверов с минимальной задержкой. Удобно добавлять пачками в Karing, Hiddify, v2rayTUN или Streisand без сбоев и зависаний.</p>
+        </div>
+        <div class="chunks-hero-actions">
+          <a href="working_keys.txt" download="sck_working_keys.txt" class="btn-primary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            <span>Скачать общий файл (с разделами по 60)</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="chunks-grid" id="chunks-grid">
+        <div class="card empty-card">Загрузка пакетов ключей...</div>
+      </div>
+    </section>
+
+    <!-- iOS Styled Guide with SVG Icons -->
+    <section class="guide">
+      <div class="guide-header">
+        <span class="guide-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          КАК ПОЛЬЗОВАТЬСЯ
+        </span>
+      </div>
+      <div class="guide-steps">
+        <div class="guide-step">
+          <div class="step-num">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </div>
+          <div>
+            <h4>1. Скопируй ключ</h4>
+            <p>Выбери страну для одиночного ключа или открой <strong>«Пакеты по 60»</strong> и скопируй пачку.</p>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="step-num">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+          </div>
+          <div>
+            <h4>2. Вставь в приложение</h4>
+            <p>Открой <strong>Karing</strong>, <strong>Hiddify</strong>, <strong>v2rayTUN</strong>, <strong>Streisand</strong> или <strong>v2rayN</strong> и нажми <em>«Импорт из буфера»</em>.</p>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="step-num">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+              <line x1="12" y1="2" x2="12" y2="12"></line>
+            </svg>
+          </div>
+          <div>
+            <h4>3. Подключайся</h4>
+            <p>Выбери сервер с наименьшей задержкой (мс). Ключи автоматически обновляются каждые 30 минут.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pro-Tip Box -->
+      <div class="guide-tip">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="tip-icon">
+          <path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7v1.3a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-1.3A7 7 0 0 0 12 2z"/>
+        </svg>
+        <p><strong>Совет для Karing и Hiddify:</strong> Используйте раздел <em>«Пакеты по 60 ключей»</em> — клиент автоматически протестирует серверы из пачки и сам переключится на самый быстрый маршрут при сбоях.</p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-left">
+        <span class="footer-brand">SCK</span>
+        <span>· Автоматическая проверка задержки и доступности серверов</span>
+      </div>
+      <div class="footer-right">
+        <span class="footer-tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Автообновление каждые 30 минут
+        </span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <span id="toast-text">Скопировано в буфер обмена</span>
+  </div>
+
+  <script src="script.js?v=6"></script>
+</body>
+
+</html>
